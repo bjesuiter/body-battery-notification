@@ -9,6 +9,7 @@ import { env } from "./env.ts";
 import { randomUUID } from "node:crypto";
 import { storeTelegramWebhookSettings } from "./db.ts";
 import { getDailySummary } from "./garmin_api.ts";
+import { GarminDailySummarySchema } from "./types/garminDailySummary.type.ts";
 
 export const baseUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
 
@@ -18,13 +19,18 @@ export async function getBotUpdates() {
 }
 
 export async function sendMessage(chatId: string, text: string) {
-  const response = await ky.post(`${baseUrl}/sendMessage`, {
-    json: {
-      chat_id: chatId,
-      text,
-    },
-  });
-  return await response.json();
+  try {
+    const response = await ky.post(`${baseUrl}/sendMessage`, {
+      json: {
+        chat_id: chatId,
+        text,
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to send message to telegram: ${error}`);
+    return false;
+  }
 }
 
 export function sendInfo(chatId: string, text: string) {
@@ -119,10 +125,25 @@ export async function handleBotCommand(command: string, message: unknown) {
       break;
     case "/get_daily_summary": {
       await sendMessage(env.TELEGRAM_CHAT_ID, "Getting daily summary...");
-      const dailySummary = await getDailySummary(env.GARMIN_USER_GUID);
+      const dailySummaryRaw = await getDailySummary(env.GARMIN_USER_GUID);
+      const dailySummary = GarminDailySummarySchema.safeParse(dailySummaryRaw);
+      if (!dailySummary.success) {
+        await sendMessage(
+          env.TELEGRAM_CHAT_ID,
+          `Failed to parse daily summary: ${dailySummary.error}`,
+        );
+        break;
+      }
       await sendMessage(
         env.TELEGRAM_CHAT_ID,
-        JSON.stringify(dailySummary, null, 2),
+        `
+        Most Recent Body Battery Value: 
+       ${dailySummary.data.bodyBatteryMostRecentValue}
+
+
+       Last Sync Timestamp: 
+       ${dailySummary.data.lastSyncTimestampGMT}
+       `,
       );
       break;
     }
