@@ -47,24 +47,25 @@ router.post("/telegram/updates", async (ctx) => {
   if (reqBody.message) {
     const message = reqBody.message;
 
-    if (!message?.entities?.some((entity) => entity.type === "bot_command")) {
-      sendMessage(
-        env.TELEGRAM_CHAT_ID,
-        "I'm sorry, I can only handle commands",
+    if (message?.entities?.some((entity) => entity.type === "bot_command")) {
+      const commandEntity = message.entities.find((entity) =>
+        entity.type === "bot_command"
       );
+      console.debug(`Found command entity`, { commandEntity });
+      if (commandEntity) {
+        const command = message.text.slice(
+          commandEntity.offset,
+          commandEntity.offset + commandEntity.length,
+        );
+        await handleBotCommand(command, message);
+      }
       return;
     }
 
-    const commandEntity = message.entities.find((entity) =>
-      entity.type === "bot_command"
+    sendMessage(
+      env.TELEGRAM_CHAT_ID,
+      "I'm sorry, I got this message, but I can only handle commands",
     );
-    if (commandEntity) {
-      const command = message.text.slice(
-        commandEntity.offset,
-        commandEntity.offset + commandEntity.length,
-      );
-      await handleBotCommand(command, message);
-    }
   }
 
   sendMessage(env.TELEGRAM_CHAT_ID, "I'm sorry, I can only handle commands");
