@@ -92,17 +92,17 @@ router.get("/set-auth", async (ctx) => {
   }
 });
 
-router.get("/get-daily-summary", async (ctx) => {
-  try {
-    const dailySummary = await getDailySummary(env.GARMIN_USER_GUID);
-    sendSuccess(
-      env.TELEGRAM_CHAT_ID,
-      "DEBUG: Daily summary fetched successfully",
-    );
-    return { dailySummary };
-  } catch (error) {
-    ctx.throw(500, "Failed to get daily summary");
-    console.error(`Failed to get daily summary`, error);
-    return;
-  }
-});
+// router.get("/get-daily-summary", async (ctx) => {
+//   try {
+//     const dailySummary = await getDailySummary(env.GARMIN_USER_GUID);
+//     sendSuccess(
+//       env.TELEGRAM_CHAT_ID,
+//       "DEBUG: Daily summary fetched successfully",
+//     );
+//     return { dailySummary };
+//   } catch (error) {
+//     ctx.throw(500, "Failed to get daily summary");
+//     console.error(`Failed to get daily summary`, error);
+//     return;
+//   }
+// });

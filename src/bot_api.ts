@@ -8,6 +8,7 @@ import ky from "ky";
 import { env } from "./env.ts";
 import { randomUUID } from "node:crypto";
 import { storeTelegramWebhookSettings } from "./db.ts";
+import { getDailySummary } from "./garmin_api.ts";
 
 export const baseUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
 
@@ -113,7 +114,20 @@ export async function handleBotCommand(command: string, message: unknown) {
       await sendMessage(env.TELEGRAM_CHAT_ID, "Hello, world!");
       break;
     case "/help":
+      // TODO: add a real help message
       await sendMessage(env.TELEGRAM_CHAT_ID, "Help!");
+      break;
+    case "/get_daily_summary": {
+      await sendMessage(env.TELEGRAM_CHAT_ID, "Getting daily summary...");
+      const dailySummary = await getDailySummary(env.GARMIN_USER_GUID);
+      await sendMessage(
+        env.TELEGRAM_CHAT_ID,
+        JSON.stringify(dailySummary, null, 2),
+      );
+      break;
+    }
+    case "/reauth_garmin":
+      await sendMessage(env.TELEGRAM_CHAT_ID, "Not implemented yet!");
       break;
     default:
       await sendMessage(
