@@ -6,6 +6,8 @@ A Deno.cron (job) which reads the body battery value from the inofficial web API
 Dashboard on Deno Deploy: https://dash.deno.com/projects/jb-body-battery-bot
 API Entrypoint: jb-body-battery-bot.deno.dev
 
+Refresh auth in prod: https://jb-body-battery-bot.deno.dev/set-auth?jwtFgp=&refreshToken=
+
 ## Utils 
 
 - Instructions on how to use the API: https://wiki.brianturchyn.net/programming/apis/garmin/

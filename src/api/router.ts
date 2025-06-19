@@ -17,6 +17,7 @@ router.get("/set-auth", async (ctx) => {
   }
   try {
     const newAuth = await refreshTokens({ jwtFgp, refreshToken });
+    console.debug(`Refreshed auth:`, newAuth);
     return {
       message:
         "Auth (jwtFgp, refreshToken and accessToken) refreshed successfully",
