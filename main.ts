@@ -5,7 +5,8 @@ import { ensureWebhookRegistration, setCommands } from "./src/bot_api.ts";
 await ensureWebhookRegistration();
 
 // Step 2: set bot commands on each deployment
-await setCommands();
+const response = await setCommands();
+console.log(`setCommands response:`, response);
 
 // Deno.cron(
 //   "get_garmin_daily_summary_per_hour",
