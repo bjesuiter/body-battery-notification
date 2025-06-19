@@ -1,6 +1,12 @@
 import ky, { HTTPError } from "ky";
-import { getOrInitAuth, storeAuth } from "./db.ts";
+import { getOrInitAuth, storeAuth, storeDailySummary } from "./db.ts";
 import { Auth } from "./types/auth.type.ts";
+import {
+  GarminDailySummaryRaw,
+  GarminDailySummaryRawSchema,
+} from "./types/garminDailySummary.type.ts";
+import { sendError, sendInfo } from "./bot_api.ts";
+import { env } from "./env.ts";
 
 export async function refreshTokens(auth: Omit<Auth, "accessToken">) {
   const response = await ky.post(
@@ -45,7 +51,9 @@ export async function refreshTokens(auth: Omit<Auth, "accessToken">) {
   return newAuth;
 }
 
-export async function getDailySummary(userGuid: string) {
+export async function getDailySummary(
+  userGuid: string,
+): Promise<GarminDailySummaryRaw | undefined> {
   const auth = await getOrInitAuth();
 
   // Example URL
@@ -70,9 +78,11 @@ export async function getDailySummary(userGuid: string) {
           async ({ request, error }: { request: Request; error: Error }) => {
             if (error instanceof HTTPError) {
               if (error.response.status === 403) {
-                console.info(
-                  "getDailySummary: failed with 403-NotAuthorized, refreshing tokens",
-                );
+                const infoText =
+                  `getDailySummary: failed with 403-NotAuthorized, refreshing tokens`;
+                sendInfo(env.TELEGRAM_CHAT_ID, infoText);
+                console.info(infoText);
+
                 const newAuth = await refreshTokens(auth);
                 request.headers.set("Cookie", `JWT_FGP=${newAuth.jwtFgp}`);
                 request.headers.set(
@@ -82,7 +92,10 @@ export async function getDailySummary(userGuid: string) {
               }
             }
 
-            console.error(`Unknown HTTP ERROR for getDailySummary:`, error);
+            const errorText =
+              `Unknown HTTP ERROR for getDailySummary: ${error}`;
+            sendError(env.TELEGRAM_CHAT_ID, errorText);
+            console.error(errorText);
           },
         ],
       },
@@ -90,14 +103,25 @@ export async function getDailySummary(userGuid: string) {
   );
 
   if (!response.ok) {
-    console.error(
-      `getDailySummary: failed with ${response.status} ${response.statusText}`,
-      response.body,
-    );
-    // TODO: Send telegram message
+    const errorText =
+      `getDailySummary: failed with ${response.status} ${response.statusText}`;
+    sendError(env.TELEGRAM_CHAT_ID, errorText);
+    console.error(errorText);
+    return undefined;
   }
 
-  const data = await response.json();
+  const dataRaw = await response.json();
+  const parsed = GarminDailySummaryRawSchema.safeParse(dataRaw);
 
-  return data;
+  if (!parsed.success) {
+    const errorText =
+      `getDailySummary: failed to parse response as GarminDailySummaryRaw: ${parsed.error}`;
+    sendError(env.TELEGRAM_CHAT_ID, errorText);
+    console.error(errorText);
+    return undefined;
+  }
+
+  const receivedAt = new Date();
+  storeDailySummary(parsed.data, receivedAt);
+  return parsed.data;
 }
