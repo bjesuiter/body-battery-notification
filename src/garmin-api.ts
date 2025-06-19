@@ -79,7 +79,7 @@ export async function getDailySummary(
             if (error instanceof HTTPError) {
               if (error.response.status === 403) {
                 const infoText =
-                  `getDailySummary: failed with 403-NotAuthorized, refreshing tokens`;
+                  `getDailySummary: failed with 403-Forbidden, refreshing tokens`;
                 sendInfo(env.TELEGRAM_CHAT_ID, infoText);
                 console.info(infoText);
 
@@ -89,6 +89,14 @@ export async function getDailySummary(
                   "Authorization",
                   `Bearer ${newAuth.accessToken}`,
                 );
+              }
+
+              if (error.response.status === 401) {
+                const errorText =
+                  `getDailySummary: failed with 401-Unauthorized => change the jwtFgp and refreshToken!`;
+                sendError(env.TELEGRAM_CHAT_ID, errorText);
+                console.error(errorText);
+                return ky.stop;
               }
             }
 
