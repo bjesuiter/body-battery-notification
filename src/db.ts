@@ -2,7 +2,8 @@ import { env } from "./env.ts";
 import { refreshTokens } from "./garmin-api.ts";
 import { Auth } from "./types/auth.type.ts";
 
-const kv = await Deno.openKv("./kv.db");
+// NOTE: non default databases are not supported on Deno Deploy right now (2025-06-19)
+const kv = await Deno.openKv();
 
 // Deno KV quick start docs: https://docs.deno.com/deploy/kv/manual/
 
