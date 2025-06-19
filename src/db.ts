@@ -1,5 +1,5 @@
 import { env } from "./env.ts";
-import { refreshTokens } from "./garmin-api.ts";
+import { refreshTokens } from "./garmin_api.ts";
 import { Auth } from "./types/auth.type.ts";
 
 // NOTE: non default databases are not supported on Deno Deploy right now (2025-06-19)
