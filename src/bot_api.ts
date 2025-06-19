@@ -6,4 +6,4 @@
 
 import { env } from "./env.ts";
 
-const baseUrl = `https://api.telegram.org/bot${env.BOT_TOKEN}`;
+const baseUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
