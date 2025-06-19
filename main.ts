@@ -1,7 +1,7 @@
 import { router } from "./src/api/router.ts";
 import { getDailySummaryCron } from "./src/cron.ts";
 import { env } from "./src/env.ts";
-import { getDailySummary, refreshTokens } from "./src/garmin-api.ts";
+import { getDailySummary, refreshTokens } from "./src/garmin_api.ts";
 
 // Deno.cron(
 //   "get_garmin_daily_summary_per_hour",

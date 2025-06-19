@@ -1,6 +1,6 @@
 import { Router, v } from "@oak/acorn";
 import { storeAuth } from "../db.ts";
-import { getDailySummary, refreshTokens } from "../garmin-api.ts";
+import { getDailySummary, refreshTokens } from "../garmin_api.ts";
 import { env } from "../env.ts";
 
 /**
