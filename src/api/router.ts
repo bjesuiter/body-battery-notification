@@ -2,7 +2,7 @@ import { Router, v } from "@oak/acorn";
 import { getTelegramWebhookSettings, storeAuth } from "../db.ts";
 import { getDailySummary, refreshTokens } from "../garmin_api.ts";
 import { env } from "../env.ts";
-import { sendSuccess } from "../bot_api.ts";
+import { handleBotCommand, sendSuccess } from "../bot_api.ts";
 import { contentType } from "jsr:@std/media-types@1/content-type";
 
 /**
@@ -29,11 +29,37 @@ router.post("/telegram/updates", async (ctx) => {
   }
 
   // log the update message (for debugging and insights)
-  const reqBody = await ctx.body();
+  const reqBody = await ctx.body() as {
+    message?: {
+      text: string;
+      entities?: Array<{
+        type: string;
+        offset: number;
+        length: number;
+      }>;
+    };
+  };
   console.log(`Received update from telegram`, {
     currentSecretToken,
     reqBody,
   });
+
+  // handle the message
+  if (reqBody.message) {
+    const message = reqBody.message;
+    if (message?.entities?.some((entity) => entity.type === "bot_command")) {
+      const commandEntity = message.entities.find((entity) =>
+        entity.type === "bot_command"
+      );
+      if (commandEntity) {
+        const command = message.text.slice(
+          commandEntity.offset,
+          commandEntity.offset + commandEntity.length,
+        );
+        await handleBotCommand(command, message);
+      }
+    }
+  }
 });
 
 // manual routes - remove once telegram integration is working

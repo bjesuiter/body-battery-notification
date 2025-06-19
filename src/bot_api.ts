@@ -105,3 +105,14 @@ export async function setCommands() {
   });
   return await response.json();
 }
+
+export async function handleBotCommand(command: string, message: unknown) {
+  switch (command) {
+    case "start":
+      await sendMessage(env.TELEGRAM_CHAT_ID, "Hello, world!");
+      break;
+    case "help":
+      await sendMessage(env.TELEGRAM_CHAT_ID, "Help!");
+      break;
+  }
+}
