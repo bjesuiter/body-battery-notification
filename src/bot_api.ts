@@ -9,7 +9,7 @@ import { env } from "./env.ts";
 import { randomUUID } from "node:crypto";
 import { storeTelegramWebhookSettings } from "./db.ts";
 
-const baseUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
+export const baseUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
 
 export async function getBotUpdates() {
   const response = await ky.get(`${baseUrl}/getUpdates`);
