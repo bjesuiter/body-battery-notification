@@ -1,6 +1,11 @@
 # body-battery-notification
 A Deno.cron (job) which reads the body battery value from the inofficial web API and posts it to a telegram bot
 
+## Important Links 
+
+Dashboard on Deno Deploy: https://dash.deno.com/projects/jb-body-battery-bot
+API Entrypoint: jb-body-battery-bot.deno.dev
+
 ## Utils 
 
 - Instructions on how to use the API: https://wiki.brianturchyn.net/programming/apis/garmin/
