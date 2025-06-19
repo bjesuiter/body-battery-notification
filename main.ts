@@ -1,3 +1,3 @@
-const test = Deno.env.get("TEST");
+import { env } from "./src/env.ts";
 
-console.log(test);
+console.log(env.TEST);
