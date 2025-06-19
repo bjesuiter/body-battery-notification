@@ -66,3 +66,23 @@ export async function registerWebhook() {
 
   sendSuccess(env.TELEGRAM_CHAT_ID, "DEBUG: Webhook registered successfully");
 }
+
+export async function setCommands() {
+  const response = await ky.post(`${baseUrl}/setMyCommands`, {
+    json: {
+      commands: [
+        { command: "start", description: "Start the bot - noop right now" },
+        { command: "help", description: "Get help for the available commands" },
+        {
+          command: "get-daily-summary",
+          description: "Gets the garmin 'daily summary' now",
+        },
+        {
+          command: "reauth-garmin",
+          description: "Re-authenticates the garmin account",
+        },
+      ],
+    },
+  });
+  return await response.json();
+}
