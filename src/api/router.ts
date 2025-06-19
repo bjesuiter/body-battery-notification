@@ -51,7 +51,6 @@ router.post("/telegram/updates", async (ctx) => {
       const commandEntity = message.entities.find((entity) =>
         entity.type === "bot_command"
       );
-      console.debug(`Found command entity`, { commandEntity });
       if (commandEntity) {
         const command = message.text.slice(
           commandEntity.offset,
