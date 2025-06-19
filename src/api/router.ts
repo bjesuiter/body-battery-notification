@@ -1,5 +1,5 @@
 import { Router, v } from "@oak/acorn";
-import { storeAuth } from "../db.ts";
+import { getTelegramWebhookSettings, storeAuth } from "../db.ts";
 import { getDailySummary, refreshTokens } from "../garmin_api.ts";
 import { env } from "../env.ts";
 import { sendSuccess } from "../bot_api.ts";
@@ -13,12 +13,25 @@ export const router = new Router();
 router.get("/", () => ({ hello: "world" }));
 
 router.post("/telegram/updates", async (ctx) => {
-  const secretToken = ctx.request.headers.get(
+  const currentSecretToken = ctx.request.headers.get(
     "X-Telegram-Bot-Api-Secret-Token",
   );
+  const { secretToken: storedSecretToken } = await getTelegramWebhookSettings();
+
+  // validate secret token
+  if (currentSecretToken !== storedSecretToken) {
+    ctx.throw(403, "Forbidden: Invalid secret token");
+    console.error(`Received update from telegram but secret token is invalid`, {
+      currentSecretToken,
+      storedSecretToken,
+    });
+    return;
+  }
+
+  // log the update message (for debugging and insights)
   const reqBody = await ctx.body();
   console.log(`Received update from telegram`, {
-    secretToken,
+    currentSecretToken,
     reqBody,
   });
 });
