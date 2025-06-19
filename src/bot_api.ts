@@ -115,5 +115,11 @@ export async function handleBotCommand(command: string, message: unknown) {
     case "/help":
       await sendMessage(env.TELEGRAM_CHAT_ID, "Help!");
       break;
+    default:
+      await sendMessage(
+        env.TELEGRAM_CHAT_ID,
+        `I'm sorry, I don't know how to handle the command: ${command}`,
+      );
+      break;
   }
 }
