@@ -1,11 +1,13 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-    TEST: z.string(),
+    JWT_FGP: z.string(),
+    REFRESH_TOKEN: z.string(),
 })
 
 const envRaw = {
-    TEST: Deno.env.get("TEST"),
+    JWT_FGP: Deno.env.get("JWT_FGP"),
+    REFRESH_TOKEN: Deno.env.get("REFRESH_TOKEN"),
 }
 
 export const env = envSchema.parse(envRaw);
