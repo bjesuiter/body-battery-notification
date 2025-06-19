@@ -2,6 +2,7 @@ import { Router, v } from "@oak/acorn";
 import { storeAuth } from "../db.ts";
 import { getDailySummary, refreshTokens } from "../garmin_api.ts";
 import { env } from "../env.ts";
+import { sendSuccess } from "../bot_api.ts";
 
 /**
  * oak/acorn docs: https://jsr.io/@oak/acorn
@@ -33,6 +34,10 @@ router.get("/set-auth", async (ctx) => {
 router.get("/get-daily-summary", async (ctx) => {
   try {
     const dailySummary = await getDailySummary(env.GARMIN_USER_GUID);
+    sendSuccess(
+      env.TELEGRAM_CHAT_ID,
+      "DEBUG: Daily summary fetched successfully",
+    );
     return { dailySummary };
   } catch (error) {
     ctx.throw(500, "Failed to get daily summary");
