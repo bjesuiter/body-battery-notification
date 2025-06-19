@@ -1,6 +1,7 @@
 import { Router, v } from "@oak/acorn";
 import { storeAuth } from "../db.ts";
-import { refreshTokens } from "../garmin-api.ts";
+import { getDailySummary, refreshTokens } from "../garmin-api.ts";
+import { env } from "../env.ts";
 
 /**
  * oak/acorn docs: https://jsr.io/@oak/acorn
@@ -25,6 +26,17 @@ router.get("/set-auth", async (ctx) => {
   } catch (error) {
     ctx.throw(500, "Failed to refresh tokens");
     console.error(`Failed to refresh tokens`, error);
+    return;
+  }
+});
+
+router.get("/get-daily-summary", async (ctx) => {
+  try {
+    const dailySummary = await getDailySummary(env.GARMIN_USER_GUID);
+    return { dailySummary };
+  } catch (error) {
+    ctx.throw(500, "Failed to get daily summary");
+    console.error(`Failed to get daily summary`, error);
     return;
   }
 });
