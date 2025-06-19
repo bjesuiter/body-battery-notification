@@ -2,7 +2,7 @@ import { Router, v } from "@oak/acorn";
 import { getTelegramWebhookSettings, storeAuth } from "../db.ts";
 import { getDailySummary, refreshTokens } from "../garmin_api.ts";
 import { env } from "../env.ts";
-import { handleBotCommand, sendSuccess } from "../bot_api.ts";
+import { handleBotCommand, sendMessage, sendSuccess } from "../bot_api.ts";
 import { contentType } from "jsr:@std/media-types@1/content-type";
 
 /**
@@ -40,26 +40,34 @@ router.post("/telegram/updates", async (ctx) => {
     };
   };
   console.log(`Received update from telegram`, {
-    currentSecretToken,
     reqBody,
   });
 
   // handle the message
   if (reqBody.message) {
     const message = reqBody.message;
-    if (message?.entities?.some((entity) => entity.type === "bot_command")) {
-      const commandEntity = message.entities.find((entity) =>
-        entity.type === "bot_command"
+
+    if (!message?.entities?.some((entity) => entity.type === "bot_command")) {
+      sendMessage(
+        env.TELEGRAM_CHAT_ID,
+        "I'm sorry, I can only handle commands",
       );
-      if (commandEntity) {
-        const command = message.text.slice(
-          commandEntity.offset,
-          commandEntity.offset + commandEntity.length,
-        );
-        await handleBotCommand(command, message);
-      }
+      return;
+    }
+
+    const commandEntity = message.entities.find((entity) =>
+      entity.type === "bot_command"
+    );
+    if (commandEntity) {
+      const command = message.text.slice(
+        commandEntity.offset,
+        commandEntity.offset + commandEntity.length,
+      );
+      await handleBotCommand(command, message);
     }
   }
+
+  sendMessage(env.TELEGRAM_CHAT_ID, "I'm sorry, I can only handle commands");
 });
 
 // manual routes - remove once telegram integration is working

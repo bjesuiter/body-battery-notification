@@ -107,6 +107,7 @@ export async function setCommands() {
 }
 
 export async function handleBotCommand(command: string, message: unknown) {
+  console.debug(`Received bot command`, { command, message });
   switch (command) {
     case "start":
       await sendMessage(env.TELEGRAM_CHAT_ID, "Hello, world!");
