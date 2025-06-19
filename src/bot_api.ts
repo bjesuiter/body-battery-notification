@@ -42,9 +42,6 @@ export function sendSuccess(chatId: string, text: string) {
   return sendMessage(chatId, `✅ ${text}`);
 }
 
-/**
- * CAUTION: Registers a webhook twice if called twice!
- */
 export async function registerWebhook() {
   const webhookUrl = `https://jb-body-battery-bot.deno.dev/telegram/updates`;
   const telegramSecretWebhookToken = randomUUID();
@@ -72,7 +69,21 @@ export async function registerWebhook() {
 
 export async function getWebhookInfo() {
   const response = await ky.get(`${baseUrl}/getWebhookInfo`);
-  return await response.json();
+  return await response.json() as {
+    ok: boolean;
+    result: {
+      url: string;
+    };
+  };
+}
+
+export async function ensureWebhookRegistration() {
+  const webhookInfo = await getWebhookInfo();
+  if (
+    !webhookInfo.ok || !webhookInfo.result.url || webhookInfo.result.url === ""
+  ) {
+    await registerWebhook();
+  }
 }
 
 export async function setCommands() {
