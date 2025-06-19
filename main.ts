@@ -1,13 +1,19 @@
+import { getOrInitAuth } from "./src/db.ts";
 import { env } from "./src/env.ts";
-import { getAuth, storeAuth } from "./src/db.ts";
+import { getDailySummary, refreshTokens } from "./src/garmin-api.ts";
 
-const auth  = await getAuth();
+// const auth = await getOrInitAuth();
 
-if (!auth) {
-    console.debug("No auth found in Deno.kv, getting tokens from env");
-    const newAuth = {
-        jwtFgp: env.JWT_FGP,
-        refreshToken: env.REFRESH_TOKEN,
-    };
-    await storeAuth(newAuth);
+// const newAuth = await refreshTokens({
+//     jwtFgp: auth.jwtFgp,
+//     refreshToken: auth.refreshToken,
+// });
+
+const result = await getDailySummary(env.USER_GUID).catch((error) => {
+    console.error(error);
+    return null;
+});
+
+if (result) {
+    console.log(result);
 }
