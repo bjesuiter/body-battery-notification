@@ -93,11 +93,11 @@ export async function setCommands() {
         { command: "start", description: "Start the bot - noop right now" },
         { command: "help", description: "Get help for the available commands" },
         {
-          command: "get-daily-summary",
+          command: "get_daily_summary",
           description: "Gets the garmin 'daily summary' now",
         },
         {
-          command: "reauth-garmin",
+          command: "reauth_garmin",
           description: "Re-authenticates the garmin account",
         },
       ],
