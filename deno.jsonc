@@ -2,7 +2,9 @@
   "tasks": {
     "dev": "deno run -A --watch --env-file --unstable-kv --unstable-cron main.ts",
     "play_bot": "deno run -A --watch --env-file ./playground/bot_playground.ts", 
-    "play_garmin": "deno run -A --watch --env-file --unstable-kv ./playground/garmin_playground.ts"
+    "play_garmin": "deno run -A --watch --env-file --unstable-kv ./playground/garmin_playground.ts", 
+    "get_webhook_info": "deno run -A --env-file --unstable-kv ./scripts/get_webhook_info.ts",
+    "delete_webhook": "deno run -A --env-file --unstable-kv ./scripts/delete_webhook.ts"
   },
   "imports": {
     "@oak/acorn": "jsr:@oak/acorn@^1.1.1",
