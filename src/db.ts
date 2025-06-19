@@ -7,6 +7,30 @@ const kv = await Deno.openKv();
 
 // Deno KV quick start docs: https://docs.deno.com/deploy/kv/manual/
 
+export async function storeTelegramWebhookSettings({
+  secretToken,
+}: {
+  secretToken: string;
+}) {
+  const result = await kv.set(["telegram_webhook_settings"], {
+    secretToken,
+  });
+  if (!result.ok) {
+    throw new Error("Failed to store telegram webhook settings");
+  }
+  return result;
+}
+
+export async function getTelegramWebhookSettings() {
+  const result = await kv.get<{ secretToken: string }>([
+    "telegram_webhook_settings",
+  ]);
+  if (!result.value) {
+    throw new Error("No telegram webhook settings found");
+  }
+  return result.value;
+}
+
 export async function storeAuth(newAuth: Auth) {
   const result = await kv.set(["auth"], newAuth);
   if (!result.ok) {

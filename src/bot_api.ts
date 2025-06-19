@@ -6,6 +6,8 @@
 
 import ky from "ky";
 import { env } from "./env.ts";
+import { randomUUID } from "node:crypto";
+import { storeTelegramWebhookSettings } from "./db.ts";
 
 const baseUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
 
@@ -38,4 +40,29 @@ export function sendWarning(chatId: string, text: string) {
 
 export function sendSuccess(chatId: string, text: string) {
   return sendMessage(chatId, `✅ ${text}`);
+}
+
+export async function registerWebhook() {
+  const webhookUrl = `https://jb-body-battery-bot.deno.dev/telegram/updates`;
+  const telegramSecretWebhookToken = randomUUID();
+  const response = await ky.post(`${baseUrl}/setWebhook`, {
+    json: {
+      url: webhookUrl,
+      secret_token: telegramSecretWebhookToken,
+    },
+  });
+
+  if (response.status !== 200) {
+    sendError(
+      env.TELEGRAM_CHAT_ID,
+      `Failed to register webhook: ${response.status} ${response.text}`,
+    );
+    throw new Error(`Failed to register webhook: ${response.status}`);
+  }
+
+  await storeTelegramWebhookSettings({
+    secretToken: telegramSecretWebhookToken,
+  });
+
+  sendSuccess(env.TELEGRAM_CHAT_ID, "DEBUG: Webhook registered successfully");
 }

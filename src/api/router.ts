@@ -3,6 +3,7 @@ import { storeAuth } from "../db.ts";
 import { getDailySummary, refreshTokens } from "../garmin_api.ts";
 import { env } from "../env.ts";
 import { sendSuccess } from "../bot_api.ts";
+import { contentType } from "jsr:@std/media-types@1/content-type";
 
 /**
  * oak/acorn docs: https://jsr.io/@oak/acorn
@@ -10,6 +11,19 @@ import { sendSuccess } from "../bot_api.ts";
 export const router = new Router();
 
 router.get("/", () => ({ hello: "world" }));
+
+router.post("/telegram/updates", async (ctx) => {
+  const secretToken = ctx.request.headers.get(
+    "X-Telegram-Bot-Api-Secret-Token",
+  );
+  const reqBody = await ctx.body();
+  console.log(`Received update from telegram`, {
+    secretToken,
+    reqBody,
+  });
+});
+
+// manual routes - remove once telegram integration is working
 
 router.get("/set-auth", async (ctx) => {
   const { jwtFgp, refreshToken } = await ctx.queryParams();
