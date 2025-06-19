@@ -124,27 +124,27 @@ export async function handleBotCommand(command: string, message: unknown) {
       await sendMessage(env.TELEGRAM_CHAT_ID, "Help!");
       break;
     case "/get_daily_summary": {
-      await sendMessage(env.TELEGRAM_CHAT_ID, "Getting daily summary...");
-      const dailySummaryRaw = await getDailySummary(env.GARMIN_USER_GUID);
-      const dailySummary = GarminDailySummarySchema.safeParse(dailySummaryRaw);
-      if (!dailySummary.success) {
-        await sendMessage(
-          env.TELEGRAM_CHAT_ID,
-          `Failed to parse daily summary: ${dailySummary.error}`,
-        );
-        break;
-      }
-      await sendMessage(
-        env.TELEGRAM_CHAT_ID,
-        `
-        Most Recent Body Battery Value: 
-       ${dailySummary.data.bodyBatteryMostRecentValue}
+      await sendMessage(env.TELEGRAM_CHAT_ID, "Not implemented yet!");
+      // await sendMessage(env.TELEGRAM_CHAT_ID, "Getting daily summary...");
+      // const dailySummaryRaw = await getDailySummary(env.GARMIN_USER_GUID);
+      // const dailySummary = GarminDailySummarySchema.safeParse(dailySummaryRaw);
+      // if (!dailySummary.success) {
+      //   await sendMessage(
+      //     env.TELEGRAM_CHAT_ID,
+      //     `Failed to parse daily summary: ${dailySummary.error}`,
+      //   );
+      //   break;
+      // }
+      // await sendMessage(
+      //   env.TELEGRAM_CHAT_ID,
+      //   `
+      //   Most Recent Body Battery Value:
+      //  ${dailySummary.data.bodyBatteryMostRecentValue}
 
-
-       Last Sync Timestamp: 
-       ${dailySummary.data.lastSyncTimestampGMT}
-       `,
-      );
+      //  Last Sync Timestamp:
+      //  ${dailySummary.data.lastSyncTimestampGMT}
+      //  `,
+      // );
       break;
     }
     case "/reauth_garmin":
