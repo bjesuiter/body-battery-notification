@@ -40,3 +40,6 @@ Get daily summary in prod: https://jb-body-battery-bot.deno.dev/get-daily-summar
 - create a new bot using the BotFather (https://t.me/BotFather)
 - copy the token from the BotFather
 - paste the token into the .env file
+
+--- 
+restart trigger
